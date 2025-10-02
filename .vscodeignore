@@ -1,0 +1,10 @@
+.vscode/**
+.git
+.gitignore
+node_modules/**
+.eslintrc.json
+.prettierrc
+*.vsix
+promts/**
+
+

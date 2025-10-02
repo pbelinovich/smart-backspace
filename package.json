@@ -1,0 +1,69 @@
+{
+  "name": "smart-backspace",
+  "displayName": "Smart Backspace",
+  "description": "WebStorm-like smart backspace for VSCode - deletes empty lines and auto-indents intelligently",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "smartBackspace.deleteOrSmart",
+        "title": "Smart Backspace: Delete or Smart"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "smartBackspace.deleteOrSmart",
+        "key": "backspace",
+        "when": "editorTextFocus && !editorReadonly"
+      }
+    ],
+    "configuration": {
+      "title": "Smart Backspace",
+      "properties": {
+        "smartBackspace.languages": {
+          "type": "array",
+          "default": [
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "typescriptreact",
+            "css",
+            "scss"
+          ],
+          "description": "List of language IDs where Smart Backspace is active",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "vscode": "^1.1.37"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "keywords": [
+    "backspace",
+    "smart",
+    "indent",
+    "webstorm"
+  ],
+  "author": "",
+  "license": "MIT"
+}

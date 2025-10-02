@@ -37,6 +37,24 @@ const isOnEmptyLineAtStart = (editor, position) => {
 }
 
 /**
+ * Checks if cursor is at the start of a line with content and the previous line is empty.
+ * @param {vscode.TextEditor} editor - The active text editor
+ * @param {vscode.Position} position - Current cursor position
+ * @returns {boolean} True if at start of content line with empty line above
+ */
+const isAtStartWithEmptyLineAbove = (editor, position) => {
+  if (position.character !== 0 || position.line === 0) {
+    return false
+  }
+
+  const currentLine = editor.document.lineAt(position.line)
+  const previousLine = editor.document.lineAt(position.line - 1)
+
+  // Current line must have content, previous line must be empty
+  return currentLine.text.trim().length > 0 && previousLine.text.trim().length === 0
+}
+
+/**
  * Performs smart backspace: deletes the empty line, moves cursor up, and re-indents.
  * @param {vscode.TextEditor} editor - The active text editor
  */
@@ -73,6 +91,25 @@ const performSmartBackspace = async editor => {
 }
 
 /**
+ * Deletes the empty line above the current line with content.
+ * @param {vscode.TextEditor} editor - The active text editor
+ */
+const deleteEmptyLineAbove = async editor => {
+  const position = editor.selection.active
+  const lineToDelete = position.line - 1
+
+  await editor.edit(editBuilder => {
+    // Delete the empty line above
+    const rangeToDelete = new vscode.Range(lineToDelete, 0, lineToDelete + 1, 0)
+    editBuilder.delete(rangeToDelete)
+  })
+
+  // Keep cursor at the start of the content line (which is now one line up)
+  const newPosition = new vscode.Position(lineToDelete, 0)
+  editor.selection = new vscode.Selection(newPosition, newPosition)
+}
+
+/**
  * Performs normal backspace operation.
  */
 const performNormalBackspace = async () => {
@@ -100,6 +137,9 @@ const handleSmartBackspace = async () => {
   // Check if cursor is on a line with only whitespace
   if (isOnEmptyLineAtStart(editor, position)) {
     await performSmartBackspace(editor)
+  } else if (isAtStartWithEmptyLineAbove(editor, position)) {
+    // Check if cursor is at start of content line with empty line above
+    await deleteEmptyLineAbove(editor)
   } else {
     await performNormalBackspace()
   }
